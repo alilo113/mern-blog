@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export function Newpost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,17 +22,14 @@ export function Newpost() {
       setTitle("");
       setContent("");
       setSummary("");
-      nav("/")
+      nav("/");
     } catch (error) {
       console.log(error);
     }
   }
 
   return (
-    <form
-      className="bg-gray-100 min-h-screen"
-      onSubmit={handleSubmit}
-    >
+    <form className="bg-gray-100 min-h-screen" onSubmit={handleSubmit}>
       <h1 className="text-2xl font-bold p-4">Create a New Post</h1>
       <div className="container mx-auto p-4">
         <div className="mb-4">
@@ -51,15 +50,16 @@ export function Newpost() {
           <label htmlFor="content" className="block text-gray-700 font-bold mb-2">
             Content
           </label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            id="content"
-            className="border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            rows="6"
-            placeholder="Enter content"
-            required
-          ></textarea>
+          <div className="quill-container">
+            <ReactQuill
+              value={content}
+              onChange={(value) => setContent(value)}
+              id="content"
+              className="border rounded-md text-gray-700 focus:outline-none focus:shadow-outline"
+              placeholder="Enter content"
+              required
+            />
+          </div>
         </div>
         <div className="mb-4">
           <label htmlFor="summary" className="block text-gray-700 font-bold mb-2">
