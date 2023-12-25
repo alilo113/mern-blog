@@ -31,6 +31,16 @@ app.post("/api/posts", async (req, res) => {
   }
 });
 
+app.get("/api/posts", async (req, res) => {
+  try {
+    const posts = await post.find();
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Fetch posts error:", error);
+    res.status(500).json({ error: "Error fetching posts" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`The server listens to port ${port}`);
 });
