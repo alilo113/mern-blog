@@ -31,7 +31,8 @@ function App() {
             element={<Post post={post} />} // Pass the entire post object to the Post component
           />
         ))}
-        {/* Your other routes */}
+        <Route path="/" element={<Home/>}/>  
+        <Route path="/newpost" element={<Newpost/>}/>  
       </Routes>
   );
 }

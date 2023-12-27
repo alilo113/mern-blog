@@ -12,7 +12,6 @@ export function Home() {
         const response = await axios.get("http://localhost:3000/api/posts");
         const postsData = response.data;
         setPosts(postsData); // Update state with fetched data
-        console.log("Data:", postsData);
         // Handle the data here
       } catch (error) {
         console.error("Fetch error:", error);
