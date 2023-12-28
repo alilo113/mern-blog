@@ -1,30 +1,38 @@
 const express = require("express");
 const cors = require("cors");
+const fileUpload = require('express-fileupload');
 const app = express();
 const port = 3000;
 const mongoose = require("mongoose");
-const post = require("./modules/post");
+const Post = require("./modules/post");
 
 mongoose.connect("mongodb://127.0.0.1:27017/postsDatabase")
-.then(() => {
-  console.log("Connected to mongo database");
-})
-.catch((error) => {
-  console.error("Connection error:", error);
-});
+  .then(() => {
+    console.log("Connected to MongoDB database");
+  })
+  .catch((error) => {
+    console.error("Connection error:", error);
+  });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Enable CORS for all origins
 app.use(cors());
+app.use(fileUpload());
 
 app.post("/api/posts", async (req, res) => {
   try {
     const { title, content, summary } = req.body;
-    const newPost = new post({ Title: title, Content: content, Summary: summary });
-    console.log(newPost);
+
+    if (!req.files || !req.files.image) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const image = req.files.image; // Access the uploaded file
+
+    const newPost = new Post({ Title: title, Content: content, Summary: summary, Image: image.data });
+
     const savedPost = await newPost.save();
+    res.status(201).json(savedPost);
   } catch (error) {
     console.error("Post creation error:", error);
     res.status(500).json({ error: "Error creating the post" });
@@ -33,7 +41,7 @@ app.post("/api/posts", async (req, res) => {
 
 app.get("/api/posts", async (req, res) => {
   try {
-    const posts = await post.find();
+    const posts = await Post.find();
     res.status(200).json(posts);
   } catch (error) {
     console.error("Fetch posts error:", error);
@@ -42,5 +50,5 @@ app.get("/api/posts", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`The server listens to port ${port}`);
+  console.log(`The server is listening on port ${port}`);
 });

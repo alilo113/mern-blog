@@ -13,6 +13,7 @@ function App() {
       try {
         const response = await axios.get('http://localhost:3000/api/posts');
         const postsData = response.data;
+        console.log(postsData)
         setPosts(postsData);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -23,17 +24,17 @@ function App() {
   }, []);
 
   return (
-      <Routes>
-        {posts.map((post, index) => (
-          <Route
-            key={index}
-            path={`/post/${index}`}
-            element={<Post post={post} />} // Pass the entire post object to the Post component
-          />
-        ))}
-        <Route path="/" element={<Home/>}/>  
-        <Route path="/newpost" element={<Newpost/>}/>  
-      </Routes>
+    <Routes>
+      {posts.map(post => (
+        <Route
+        key={post._id} // Use post._id instead of post.id
+        path={`/post/${post._id}`} // Use post._id for the URL path
+          element={<Post post={post} />} 
+        />
+      ))}
+      <Route path="/" element={<Home/>}/>  
+      <Route path="/newpost" element={<Newpost/>}/>  
+    </Routes>
   );
 }
 
