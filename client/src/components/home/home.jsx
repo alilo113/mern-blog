@@ -36,14 +36,14 @@ export function Home() {
       <div className="container mx-auto">
         {loading && <div>Loading...</div>}
         {error && <div>Error: {error}</div>}
-        {posts.length === 0 && !loading && !error && <div>No posts available.</div>}
+        {posts.length === 0 && !loading && !error && <></>}
         {posts.map((post) => (
           <div key={post._id} className="m-3 w-fit border border-solid border-gray-300 p-4 flex flex-wrap md:flex-nowrap">
             <div className="mb-4 mr-4 flex-shrink-0">
-              {post.ImageUrl ? (
-                <img src={post.ImageUrl} alt="" className="max-w-xs mb-2" />
+              {post.Image ? (
+              <img src={`http://localhost:3000${post.Image}`} alt="" className="max-w-xs mb-2" />
               ) : (
-                <></>
+              <></>
               )}
             </div>
             <div>

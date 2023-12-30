@@ -1,15 +1,17 @@
+// Newpost.js
 import React, { useState } from "react";
 import axios from "axios";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import DOMPurify from "dompurify";
 
 export function Newpost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
-  const [image, setImage] = useState(null); // Initialize image state with null
+  const [image, setImage] = useState(null);
   const nav = useNavigate();
 
   async function handleSubmit(e) {
@@ -17,10 +19,9 @@ export function Newpost() {
     try {
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("content", content);
+      formData.append("content", DOMPurify.sanitize(content));
       formData.append("summary", summary);
       
-      // Check if an image is present before appending it to the form data
       if (image) {
         formData.append("image", image);
       }
@@ -39,7 +40,6 @@ export function Newpost() {
       nav("/");
     } catch (error) {
       console.error("Post creation error:", error);
-      // Handle error: display error message to the user or perform necessary actions
     }
   }
   
@@ -62,18 +62,6 @@ export function Newpost() {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="content" className="block text-gray-700 font-bold mb-2">
-            Content
-          </label>
-          <div className="quill-container">
-            <ReactQuill
-                value={content}
-                onChange={(value) => setContent(value)}
-                // other props...
-            />
-          </div>
-        </div>
-        <div className="mb-4">
           <label htmlFor="summary" className="block text-gray-700 font-bold mb-2">
             Summary
           </label>
@@ -92,7 +80,7 @@ export function Newpost() {
             Image
           </label>
           <input
-            onChange={(e) => setImage(e.target.files[0])} // Update the image state on file change
+            onChange={(e) => setImage(e.target.files[0])}
             type="file"
             id="image"
             name="image"
@@ -100,16 +88,26 @@ export function Newpost() {
             accept="image/*"
           />
         </div>
+        <div className="mb-4">
+          <label htmlFor="content" className="block text-gray-700 font-bold mb-2">
+            Content
+          </label>
+          <ReactQuill
+            value={content}
+            onChange={setContent}
+            className="border rounded-md text-gray-700 focus:outline-none focus:shadow-outline"
+          />
+        </div>
         <div className="flex items-center">
-        <button
-          type="submit"
-          className="mx-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Create Post
-        </button>
-        <Link to="/">Go to home page</Link>
+          <button
+            type="submit"
+            className="mx-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Create Post
+          </button>
+          <Link to="/">Go to home page</Link>
         </div>
       </div>
     </form>
-  );  
+  );
 }

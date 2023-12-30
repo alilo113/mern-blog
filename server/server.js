@@ -1,10 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const fileUpload = require('express-fileupload');
-const app = express();
-const port = 3000;
 const mongoose = require("mongoose");
 const Post = require("./modules/post");
+const path = require('path');
+const fs = require('fs');
+
+const app = express();
+const port = 3000;
 
 mongoose.connect("mongodb://127.0.0.1:27017/postsDatabase")
   .then(() => {
@@ -14,6 +17,14 @@ mongoose.connect("mongodb://127.0.0.1:27017/postsDatabase")
     console.error("Connection error:", error);
   });
 
+const uploadDir = path.join(__dirname, 'uploads');
+
+// Ensure 'uploads' directory exists or create it
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+app.use('/uploads', express.static(uploadDir));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -27,9 +38,14 @@ app.post("/api/posts", async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const image = req.files.image; // Access the uploaded file
+    const image = req.files.image;
+    const uploadPath = path.join(uploadDir, image.name);
 
-    const newPost = new Post({ Title: title, Content: content, Summary: summary, Image: image.data });
+    await image.mv(uploadPath);
+
+    const imagePath = `/uploads/${image.name}`;
+
+    const newPost = new Post({ Title: title, Content: content, Summary: summary, Image: imagePath });
 
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
